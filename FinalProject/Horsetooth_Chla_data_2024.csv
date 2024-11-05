@@ -1,0 +1,15 @@
+﻿Group_Number,Sample_Label,FilterFolded,Chla_ugL
+2,Epilimnion Sample #1,No,0.135
+2,Epilimnion Sample #2,No,0.001
+3,Epilimnion Sample,No,0.074
+4,Epilimnion Replicate A,Yes,0.088
+4,Epilimnion Replicate B,Yes,0.085
+5,Epilimnion Sample (1 meter depth),No,0.36
+6,Epilimnion Sample,Yes,0.299
+7,Epilimnion Sample,Yes,0.182
+8,Epilimnion Sample (1 meter depth),Yes,0.514
+9,Epilimnion Sample (1 meter depth),No,0.064
+10,Sample 1a,No,0.307
+10,Sample 1b,No,0.196
+1 (but sample collected by Group 4),Replicate 1A,Yes,0.476
+1 (but sample collected by Group 4),Replicate 1B,Yes,0.317

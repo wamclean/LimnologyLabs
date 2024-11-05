@@ -1,0 +1,176 @@
+---
+title: "Lab5_Standard_Curve_Lab"
+author: "BillyMcLean"
+date: "2024-09-20"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, include=FALSE}
+library(readr)
+library(tidyverse)
+```
+
+```{r}
+ugL <- read_csv("stdcurvedata1.csv")
+SampleData <- read_csv("stdcurvedata.csv")
+
+SampleData <- SampleData %>% 
+  filter(Excluded != 1)
+```
+
+#### Insert the graph of your standard curve. For full credit, please give your graph a title and label your axis approximately (including units as needed). Your graph should show the points of the standard curve (all that you chose to include) and the regression line fit to those points.
+
+```{r}
+library(plotly)
+TN <- ggplot(data = filter(ugL, Area != 249.1000), mapping = aes(x = ug_L_DIN, y = Area))+
+  geom_point()+
+  geom_smooth(method="lm")+
+  labs(
+    x = "Total Nitrogen (ug/L)",
+    y = "Area",
+    title = "Total Nitrogen vs. Area"
+  )
+
+
+TN
+```
+
+#### What is the equation of the standard curve?
+
+```{r}
+
+model_data <- ugL %>% 
+  filter(Area != 249.1000)
+
+AreaModel <- lm(ug_L_DIN ~ Area, model_data)
+summary(AreaModel)
+```
+
+y = 0.03927x - 0.0005810
+
+#### What is the R2 of your curve?
+
+R-Squared = 0.9999
+
+#### Did you remove any of the points from your curve? Why or why not?
+
+Yes, I removed the point where the Area value was 249.1000 because it appeared to be an outlier. Doing so resulted in a change in my R-squared value from 0.9998 to 0.9999
+
+```{r}
+x <- SampleData$Area
+
+SampleData <- SampleData %>% 
+  mutate(N = 0.03927*x - 0.0005810)
+```
+
+#### Were you able to determine the value of all of the samples? Why or why not?
+
+Yes, all of the area values for our Sample Data fell within the standard curve dataset so I was able to accurately calculate the N values for our field data
+
+```{r}
+#Filter out MQ and Check data
+SampleData <- SampleData %>% 
+  filter(!Sample_Name %in% c("MQ", "check"))
+
+ggplot(data = SampleData, mapping = aes(x = N, y = Area))+
+  geom_point()+
+  labs(x = "N (ug/L)",
+       y = "Area")
+```
+
+
+#### What is the mean surface samples (across all groups)?
+
+```{r}
+#Filter to just epilimnion "E" samples, leaving out samples that do not designate location in the water column
+Surface <- SampleData %>% 
+  filter(str_detect(Sample_Name, "-E-"))
+  
+
+MeanN_Surface <- mean(Surface$N)
+
+MeanN_Surface
+```
+
+#### What is the standard deviation of surface samples (across all groups)?
+
+```{r}
+sd <- sd(Surface$N)
+
+sd
+```
+
+#### What is the mean N in deep water samples (across all groups)?
+
+```{r}
+#Assuming this is the G#-H- series of samples
+HypoSamples <- SampleData %>% 
+  filter(str_detect(Sample_Name, "-H-"))
+
+MeanNHypo <- mean(HypoSamples$N)
+
+MeanNHypo
+
+```
+
+#### What is the standard deviation of deep water samples (across all groups)?
+
+```{r}
+# sd_AreaHypo <- sd(HypoSamples$Area)
+# 
+# sd_AreaHypo
+
+sd_NHypo <- sd(HypoSamples$N)
+
+sd_NHypo
+
+```
+
+#### How do your groups samples compare to the other groups’ samples? Please provide specific values [type them below].
+
+
+```{r}
+#Sum total N by Groups
+GroupTotals <- SampleData %>% 
+  separate(Sample_Name, into = c("Group_Number", "Sample_Number"), sep = "-", extra = "merge", fill = "right")
+
+
+GroupTotals1 <- GroupTotals %>% 
+  group_by(Group_Number) %>% 
+  summarise(Total_N = sum(N))
+
+print(GroupTotals1)
+
+#Average Total N
+MeanTotalN <- GroupTotals1 %>% 
+  filter(!Group_Number %in% c("check", "MQ"))
+
+MeanTotalN <- mean(MeanTotalN$Total_N)
+
+print(MeanTotalN)
+
+Group6 <- SampleData %>% 
+  filter(str_detect(Sample_Name,"G6"))
+Group6_TotalN <- sum(Group6$N)
+
+Group6_TotalN
+```
+
+Group 6 total N is ~2.32. This is higher than the average total N across all groups (excluding "check" and "MQ"), which is 1.96.
+
+This could be linked to differing sample locations. We stopped at two separate locations on the field trip and Group 6 sampled using the Van Dorn at the first location while other groups sampled at the second.
+
+
+```{r}
+ggplot(data = GroupTotals)+
+  geom_boxplot(mapping = aes(x = Group_Number, y = N, group = Group_Number, color = Group_Number))+
+  labs(x = "Group",
+       y = "Total N (ug/L)")
+```
+
+
+

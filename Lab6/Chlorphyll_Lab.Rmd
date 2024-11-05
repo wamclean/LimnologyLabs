@@ -1,0 +1,74 @@
+---
+title: "ChlA_Lab"
+author: "BillyMcLean"
+date: "2024-10-04"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(readr)
+library(tidyverse)
+```
+
+```{r}
+YojoaData <- read_csv("Chla_data_Yojoa_Enrichment.csv")
+
+```
+
+```{r}
+YojoaData <- YojoaData %>% 
+  mutate(Chl_a_ugL = as.numeric(Chl_a_ugL))
+
+
+```
+
+1.  What was the average chlorophyll content for the control bottles? Nitrogen addition? Phosphorus? Nitrogen and Phosphorus? What is the standard error of each? Results may be displayed in a table.\
+
+```{r}
+
+YojoaData_averages <- YojoaData %>% 
+  group_by(Treatment) %>% 
+  summarize(avg = mean(Chl_a_ugL))
+
+YojoaData_sd <- YojoaData %>% 
+  group_by(Treatment) %>% 
+  summarize(sd = sd(Chl_a_ugL))
+
+print(YojoaData_averages)
+print(YojoaData_sd)
+
+```
+
+```{r}
+ggplot(data = YojoaData)+
+  geom_boxplot(mapping = aes(x = Treatment, y = Chl_a_ugL))+
+  labs(x = "Treatment",
+      y = "Chlorophyll A (ug/L)")
+```
+
+2.  Based on your calculations, what appears to be the primary source of limitation in Lake Yojoa in January: Nitrogen, Phosphorus or Co-limitation?
+
+With an average of \~10.1, Phosphorus is the primary limiting nutrient. Nitrogen and Phosphorous could be considered co-limiting, with their combined average being \~11.5, but as Nitrogen is at 5.96, Phosphorous is the primary.
+
+3.  What are other potential sources of limitation not accounted for in this experiment?
+
+4.  Produce one figure or statistical test of your choice that you feel best supports your conclusions in question 2 (i.e. bar chat with error bars, box plots, ANOVA etc.)
+
+```{r}
+N <- filter(YojoaData, Treatment == "Nitrogen")
+Ctrl <- filter(YojoaData, Treatment == "Control") 
+P <- filter(YojoaData, Treatment == "Phosphorus")
+
+
+t.test(N$Chl_a_ugL,P$Chl_a_ugL)
+t.test(N$Chl_a_ugL,Ctrl$Chl_a_ugL)
+t.test(P$Chl_a_ugL,Ctrl$Chl_a_ugL)
+
+
+
+```
+

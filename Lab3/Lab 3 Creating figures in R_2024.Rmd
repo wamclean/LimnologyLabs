@@ -1,0 +1,199 @@
+---
+title: "Creating figures in R"
+author: "Billy McLean"
+date: "9/13/2024"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R code instructions. 
+
+After setting your working directory (however you prefer), import the TrophicStateExample.csv and TimeseriesExample.csv files from last week in the code block below. You do not need to edit this code chunk, just run it. 
+
+```{r warning=FALSE, error= FALSE}
+setwd("/Users/wamclean/github/LimnologyLabs/Lab3")
+library(readr)
+library(lubridate)
+
+trophic_data <- read_csv("TrophicStateExample.csv")
+
+time_data <- read_csv("TimeseriesExample.csv")
+time_data$date<- mdy(time_data$date) 
+```
+
+## Using ggplot
+
+You can create figures without loading a package, but they will not be very customizable. Today we will use ggplot2 to create figures instead. 
+
+First, install a package called ggplot2. Then run the code below and look at two very basic figures, a scatterplot and a line graph. You don't need to edit this code block. 
+
+```{r warning=FALSE, error= FALSE}
+library(ggplot2)
+
+ggplot(trophic_data, aes(x=chl_a_ugL, y=secchi_depth_m)) + 
+    geom_point()
+
+ggplot(time_data, aes(x=date, y=secchi_depth_m)) + 
+    geom_line()
+```
+
+
+You can make plots increasingly more complex by adding lines of code using a plus sign. Run the code below and look at how it is the same code as the scatterplot above, but this code adds a red linear regression line. You don't need to edit this code block. 
+
+```{r warning=FALSE, error= FALSE}
+ggplot(trophic_data, aes(x=chl_a_ugL, y=secchi_depth_m)) + 
+    geom_point()+
+    geom_smooth(method=lm , color="red", se=FALSE) 
+```
+
+
+_PLEASE EDIT THIS CODE BLOCK:_ Meaningful axis labels are important on any figure. Please edit the below code to give your figures axis that state the parameter and the unit. Please write axis like you are writing a report (as in not just using the column names)
+
+```{r warning=FALSE, error= FALSE}
+
+ggplot(trophic_data, aes(x=chl_a_ugL, y=secchi_depth_m)) + 
+    geom_point()+
+    geom_smooth(method=lm , color="red", se=FALSE)+
+    xlab("Chlorophyl A (ugL)")+
+    ylab("Secchi Depth (m)")
+
+```
+
+The R Graph Gallery is a great resource for making figures in R. Run the code below as an example of some of the ways you can manipulate the aesthetics of a figure. The package ggthemes is also really helpful. *Install ggthemes before you run the code below*. I like the theme_few from ggthemes because is removes the background grid from figures. You do not need to edit this code. 
+
+https://r-graph-gallery.com/index.html
+
+```{r warning=FALSE, error= FALSE}
+
+library(ggthemes)
+
+ggplot(trophic_data, aes(x=chl_a_ugL, y=secchi_depth_m)) + 
+    geom_point(
+        color="orange",
+        fill="blue",
+        shape=21,
+        size=6)+
+    geom_smooth(method=lm , color="red", se=FALSE)+
+    xlab("Chlorophyl A (ugL)")+
+    ylab("Secchi Depth (m)")
+  theme_few() 
+
+
+```
+
+_PLEASE EDIT CODE BLOCK BELOW:_ Using the above example code and the R Graph Gallery as a reference, make figures that meet the requirements listed below. 
+
+## 1. Please create a figure using the trophic data with... 
+
+* red squares with a black outline for the data points (hint: squares are shape #22)
+* a black trend line
+
+```{r warning=FALSE, error= FALSE}
+ggplot(trophic_data, aes(x=chl_a_ugL, y=secchi_depth_m)) + 
+    geom_point(
+        color="black",
+        fill="red",
+        shape=22,
+        size=6)+
+    geom_smooth(method=lm , color="black", se=FALSE)+
+    xlab("Chlorophyl A (ugL)")+
+    ylab("Secchi Depth (m)")
+  theme_few() 
+
+```
+
+
+## 2. Please create a figure using the timeseries data with... 
+
+* a blue line
+
+```{r warning=FALSE, error= FALSE}
+
+ggplot(time_data, aes(x=date, y=secchi_depth_m)) + 
+    geom_line(color="blue")+
+    xlab("Date")+
+    ylab("Secchi Depth (m)")
+  theme_few() 
+```
+
+
+## 3. Please create your best version of a scatterplot using the trophic state data. Make sure to...  
+
+* change the point colors
+* change the size of the points
+* try a different theme from ggthemes
+
+
+Examples of other ggthemes can be found here.... 
+
+https://mran.microsoft.com/snapshot/2017-02-04/web/packages/ggthemes/vignettes/ggthemes.html
+
+```{r warning=FALSE, error= FALSE}
+ggplot(trophic_data, aes(x=chl_a_ugL, y=secchi_depth_m)) + 
+    geom_point(
+        color="lightblue",
+        fill="darkblue",
+        shape=21,
+        size=3)+
+    geom_smooth(method=lm , color="black", se=FALSE)+
+    xlab("Chlorophyl A (ugL)")+
+    ylab("Secchi Depth (m)")
+  theme_clean() 
+
+```
+
+
+## 4. Please create your best version of a line graph using the timeseries data. Make sure to...  
+
+* change the line color
+* change the thickness of the line
+* try a different theme from ggthemes
+
+```{r warning=FALSE, error= FALSE}
+ggplot(time_data, aes(x=date, y=secchi_depth_m)) + 
+    geom_line(color="green3", size = 2)+
+    xlab("Date")+
+    ylab("Secchi Depth (m)")+
+  theme_fivethirtyeight() 
+```
+
+
+## OPTIONAL EXTRA PRACTICE 
+
+There are a few datasets that are available in R. Below we will use the iris data set for our example. In the example below, we are coloring the scatterplot by species of iris. 
+
+```{r}
+
+
+ggplot(iris, aes(x=Sepal.Length, y=Sepal.Width, color=Species)) +
+  geom_point()
+
+
+```
+
+Maybe you want to break the species out into different panels? You can use a "facet wrap for that.
+
+```{r}
+
+ggplot(iris, aes(x=Sepal.Length, y=Sepal.Width, color=Species)) +
+  geom_point()+
+ facet_wrap(~Species)
+
+```
+
+
+Maybe you dislike the default colors in R? You can use a different palette or create your own. 
+
+Here is a great reference for customizing colors in ggplot... 
+http://www.sthda.com/english/wiki/ggplot2-colors-how-to-change-colors-automatically-and-manually
+
+
+```{r}
+ggplot(iris, aes(x=Sepal.Length, y=Sepal.Width, color=Species)) +
+  geom_point()+
+  scale_color_brewer(palette = "Dark2")
+```
+

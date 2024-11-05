@@ -1,0 +1,15 @@
+﻿Group Number,Sample Description,Volume of filtered water (ml),Was filter folded in half?,Other Notes
+2,Epilimnion Sample #1,91,No,
+2,Epilimnion Sample #2,91,No,
+3,Epilimnion Sample,90,No,
+4,Epilimnion Replicate A,80,Yes,
+4,Epilimnion Replicate B,50,Yes,
+4,"Replicate ""1A""",100,Yes,Assumed to be from the hypolimnion by process of elimination
+4,"Replicate ""1B""",100,Yes,Assumed to be from the hypolimnion by process of elimination
+5,Epilimnion Sample (1 meter depth),104,No,
+6,Epilimnion Sample,100,Yes,
+7,Epilimnion Sample,100,Yes,
+8,Epilimnion Sample (1 meter depth),103.5,Yes,
+9,Epilimnion Sample (1 meter depth),20,No,"labelled as ""ammonium nitrate"""
+10,Sample 1a,"""(40 + 55)"", so, 95",No,
+10,Sample 1b,90,No,"lots of color (maybe sediment, from the hypolimnion)"

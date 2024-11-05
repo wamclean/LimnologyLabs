@@ -1,0 +1,255 @@
+---
+title: "Stratification Lab"
+author: "Billy McLean"
+date: "9/24/2024"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+Today in lab, we will be working with the profile data that you collected during the fieldtrip, as well as one of the 2022 class trip's group's data. Make sure that this file and all the other files you need are saved in the same permanent folder. Check your working directory to make sure you are not working on this file out of 'downloads'. If you are having a hard time setting your working directory, close R and then navigate to your folder and open this file from there. 
+
+## PART ONE
+
+## Step 1: Combining the group data
+
+In the code below, you will be combining the data from all of the groups. Yes, this data set is small enough that you could easily combine them in excel, but this is good practice for larger and more complex datasets.
+
+```{r error=FALSE, message=FALSE}
+library(readr)
+
+G01<-read_csv("Group01_09062024_profiledata.csv") 
+G03<-read_csv("Group03_09062024_profiledata.csv") 
+
+combined_data<- rbind(G01,G03)
+
+#rbind (which stands for row bind) is an easy way of combing data sets
+#if all of your files have the same column names
+```
+
+## Cleaning data 
+
+The next step is too look at your data and make sure there aren't any red flags. There are lots of ways to do this and different philosophies on the best way to tackle this. I like to separate out the data into different parameters. You can always recombine the data, but since we will be making profiles of each individual parameter, this is still a useful first step. 
+
+```{r error=FALSE, message=FALSE}
+library(tidyverse)
+
+combined_data <- combined_data %>%
+  select(where(~ any(!is.na(.)))) #remove empty columns from the dataset, in this case "sal" and "chla_ugL"
+
+#use the select tool to chose which parameters you want in your new file
+#use drop_na() last to remove any empty rows
+
+temp<- combined_data %>% 
+  select(group, z_m, temp_c) %>% 
+  drop_na()
+
+pH<- combined_data %>% 
+  select(group, z_m, ph)%>% 
+  drop_na()
+
+conductivity<- combined_data %>% 
+  select(group, z_m, cond)%>% 
+  drop_na() 
+
+do_percent<- combined_data %>% 
+  select(group, z_m, do_percent) %>% 
+  drop_na()
+
+do_mgL<- combined_data %>% 
+  select(group, z_m, do_mgL) %>% 
+  drop_na()
+
+
+#A histogram is a nice quick check of your data distribution.
+#Let's use conductivity as an example.... 
+
+hist(conductivity$cond)
+
+#We see that one of the measurements is WAY higher than the other ones.
+
+#We can keep this value for now but make a mental note that it may need to be removed
+#in the future if it is determined to be an erroneous measurement.
+
+view(conductivity)
+```
+
+## Plotting profiles
+
+First, we will look at all the groups' data. In the code below we are plotting all the groups on the same figure and changing the point's color and shape to vary by group. Whenever possible, I recommend using both colors and shapes to distinguish categories because 1) it makes it more accessible and 2) helps people out if they ever print out your report in black and white.
+
+```{r fig.width=5, fig.height=8, error=FALSE, message=FALSE}
+library(ggplot2)
+library(ggthemes)
+
+do_mgL_prof <- ggplot(do_mgL,aes(x=do_mgL,y=z_m, color=group, shape= group)) +  
+  geom_point(size=3, show.legend = TRUE)+
+  theme_few() +
+  labs( x='DO (mgL)', y= 'Depth (m)')+
+  scale_y_reverse(expand = c(0.015,0))+
+  theme(text = element_text(size = 10)) 
+
+do_mgL_prof
+
+pH_prof <- ggplot(pH,aes(x=ph,y=z_m, color=group, shape= group)) +  
+  geom_point(size=3, show.legend = TRUE)+
+  theme_few() +
+  labs( x='pH', y= 'Depth (m)')+
+  scale_y_reverse(expand = c(0.015,0))+
+  theme(text = element_text(size = 10)) 
+
+pH_prof
+```
+
+
+## __PLEASE WRITE CODE BELOW__
+
+Using the example above as a guide, please create a figure that shows both the groups' temperature data. For full credit you must (at a minimum)...
+
+* Use the correct data (3 points)
+* Label your x and y axis correctly- with units (2 points)
+
+```{r fig.width=5, fig.height=8, error=FALSE, message=FALSE}
+ggplot(data = temp, mapping = aes(x=temp_c, y=z_m, color=group, shape= group)) +  
+  geom_point(size=3, show.legend = TRUE)+
+  theme_few() +
+  labs( x='Temp (C)', y= 'Depth (m)')+
+  scale_y_reverse(expand = c(0.015,0))+
+  theme(text = element_text(size = 10)) 
+
+
+```
+
+
+## An alternative approach...
+
+Instead of using individual data files like we did above, you can also combine data filtering (from tidyverse) with figure generation (from ggplot) to use the original combined dataset. 
+
+```{r fig.width=5, fig.height=8, error=FALSE, message=FALSE}
+
+combined_data %>% 
+  filter( group!= "Group_3") %>% #this line of code filters out Group_3 data from the dataset
+  drop_na() %>% 
+ggplot(aes(x=temp_c,y=z_m, color=group, shape= group)) +  
+geom_point(size=5, show.legend = TRUE)+
+theme_few() +
+labs( x='Temperature (C)', y= 'Depth (m)')+
+scale_y_reverse(expand = c(0.015,0))+
+theme(text = element_text(size = 10))   
+
+```
+
+
+## __PLEASE EDIT THE CODE BELOW__
+
+We will use this filtering approach to create your individual profiles.
+Replace the X in the code below with your group number to get your group's temperature profile. 
+
+```{r fig.width=5, fig.height=8, error=FALSE, message=FALSE}
+
+temp %>% 
+  filter( group == "Group_1") %>% ##CHANGE THIS X TO A NUMBER 
+  drop_na() %>% 
+ggplot(aes(x=temp_c,y=z_m)) +  
+geom_point(size=5, show.legend = TRUE)+
+theme_few() +
+labs( x='Temperature (C)', y= 'Depth (m)')+
+scale_y_reverse(expand = c(0.015,0))+
+theme(text = element_text(size = 10))  
+
+```
+
+
+You could also use your group's whole dataframe to create figures. In the code below, you can either use your group's dataframes or filter the data like I did in the example above. 
+
+## __PLEASE WRITE CODE BELOW__
+
+Plot your group's DO (mg/L) profile. For full credit you must (at a minimum)...
+
+* Use the correct data (3 points)
+* Label your x and y axis correctly- with units (2 points)
+* Change the color of the points on your figure (1 point)
+
+```{r fig.width=5, fig.height=8, error=FALSE, message=FALSE}
+
+do_mgL %>% 
+  filter( group == "Group_1") %>%
+  drop_na() %>% 
+ggplot(aes(x=do_mgL,y=z_m, color = group)) +  
+geom_point(size=5, show.legend = TRUE)+
+theme_few() +
+labs( x='DO (mg/L)', y= 'Depth (m)')+
+scale_y_reverse(expand = c(0.1,0))+
+theme(text = element_text(size = 10)) 
+
+```
+
+
+## __PLEASE WRITE CODE BELOW__
+
+Plot your group's conductivity profile. If your data is missing for this parameter, please use another groups' data. For full credit you must (at a minimum)...
+
+* Use the correct data (3 points)
+* Label your x and y axis correctly- with units (2 points)
+* Change the color of the points on your figure (1 point)
+
+```{r fig.width=5, fig.height=8, error=FALSE, message=FALSE}
+
+conductivity %>% 
+  filter( group == "Group_1") %>%
+  drop_na() %>% 
+ggplot(aes(x=cond,y=z_m)) +  
+geom_point(size=5, show.legend = TRUE, color = "hotpink")+
+theme_few() +
+labs( x='Conductivity mS/cm)', y= 'Depth (m)')+
+scale_y_reverse(expand = c(0.1,0))+
+theme(text = element_text(size = 10)) 
+
+```
+
+## PART 2
+
+In this next part of the lab, you will be tasked will comparing this year's data with the data from one of the 2022 ESS474 class group's data. Now that we are a little farther into the semester, this task will require a bit more independent thinking and problem-solving. However, you'll be glad to know all of the code you need for this task is contained within this lab, subject of course to a little modification. Please reach out to your team members for help if needed - but always type your own code independently for the final submission.
+
+Steps to complete...
+
+* 1. Import the 2022 data, 2022_profiledata.csv. Note that the column names are identical - that should be helpful
+* 2. Bind the 2022 dataset together with our 2024 datasets
+* 3. Create a variable for the following parameter: temperature (it will probably get confusing and prone to errors if you try to modify your existing variables from Part 1 - I would recommend creating new variables with different names for Part 2) (2 points)
+* 4. Create a profile of temperature analogous to the first plot of pH and DO in the "Plotting profiles" section above, but including the 2022 data as well. (3 points)
+* 5. Speculate as to why the 2024 temperature profiles do or do not match the 2022 temperature profile. Hint: Consider that you don't know the precise location, or the weather (e.g. wind) conditions at the time of the 2022 sampling trip. State and explain *two* reasons why the 2022 and 2024 results might differ, if they do, for temperature. You can simply type your answers to this question in normal English (not code) within your RMarkdown document like this text is being typed; it will appear in the knitted end product. Since you are just speculating, you will get points for whether your reasons are at all plausible, not if they are actually factually accurate (3 points)
+
+## __PLEASE WRITE CODE BELOW__
+
+```{r fig.width=5, fig.height=8, error=FALSE, message=FALSE}
+old_data <- read_csv("2022_profiledata.csv")
+
+bound_data <- bind_rows(combined_data, old_data)
+
+temperature <- bound_data %>% 
+  select(group, z_m, temp_c) %>% 
+  drop_na()
+
+
+temp_prof <- ggplot(data = temperature, mapping = aes(x=temp_c, y=z_m, color=group, shape= group)) +  
+  geom_point(size=3, show.legend = TRUE)+
+  theme_few() +
+  labs( x='Temp (C)', y= 'Depth (m)')+
+  scale_y_reverse(expand = c(0.015,0))+
+  theme(text = element_text(size = 10)) 
+
+temp_prof
+
+
+```
+
+We do not know when the sample was taken or in what section of the reservoir. The results between the 2024 and 2022 data may exist because the 2022 data was taken earlier than when our trip occurred, when the lake was more stratified and had a clearer distinction between the epi-, meta-, and hypolimnions. Additionally, the location of sampling may differ. We were near a dam on a relatively clear day without much boat activity, but the conditions may have been more idea on the 2022 trip. There was some difficulty on our trip with the sond being pulled by currents, so the depth we recorded may not have been as accurate as on a day with less water movement. 
+
+
+
+
+
+

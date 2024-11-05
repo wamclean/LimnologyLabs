@@ -1,0 +1,118 @@
+---
+title: "The Basics of Data in R"
+author: "Billy McLean"
+date: "9/01/2024"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(readr)
+library(lubridate)
+library(tidyverse)
+```
+
+
+### Assignment checklist:
+* Calculate mean Secchi depth - Done
+* Calculate standard deviation, median and sum for both Chlorophyll a and Secchi depth (yes, sum is not useful in this example, but it is good to know the command) - Done
+* Troubleshoot calculating mode in R - Done
+* Install lubridate package and run example code block - Done
+* Install tidyverse package and run example code blocks - Done
+
+
+### The second half of this assignment is just running example code. I encourage you to work through it line by line to understand what is happening. Then next week, when you are asked to write code, you can reference this code and copy and paste it as needed. 
+
+## R code instructions. 
+
+After setting your working directory (however you prefer), import the TrophicStateExample.csv file from last week in the code block below.
+
+```{r warning=FALSE, error= FALSE}
+setwd("/Users/wamclean/github/LimnologyLabs/Lab2")
+
+```
+
+
+In base R, you can designate a column with a '$'. 
+The notation is Dataframe$Column. Below, you can see and run an example of using this notation to find mean Chlorophyll a in our current dataframe. Use this example as a guide to *calculate mean Secchi depth*. 
+
+
+
+```{r warning=FALSE, error= FALSE}
+TrophicStateExample <- read_csv("TrophicStateExample.csv")
+mean(TrophicStateExample$chl_a_ugL)
+mean(TrophicStateExample$secchi_depth_m)
+
+```
+
+You can also calculate standard deviation, median, sum (not useful for this type of data but it's good to know it's an option). In the code below, calculate standard deviation with the command **sd()**, median with **median()** and sum with **sum()** for both Chlorophyll a and Secchi depth. 
+
+```{r warning=FALSE, error= FALSE}
+
+sd(TrophicStateExample$chl_a_ugL)
+sd(TrophicStateExample$secchi_depth_m)
+median(TrophicStateExample$chl_a_ugL)
+median(TrophicStateExample$secchi_depth_m)
+sum(TrophicStateExample$chl_a_ugL)
+sum(TrophicStateExample$secchi_depth_m)
+
+```
+
+
+Most of these basic commands are pretty intuitive. *However*, there are exceptions. For example, the command **mode()** will tell you the type of data you are using instead of giving you the statistical mode. 
+
+R will often throw you unexpected curve balls. This is where google can be *really* helpful. Look online to troubleshoot how to calculate mode in R and calculate mode for Chlorophyll a and Secchi depth in the code block below. If you get stuck here, do your best and then comment out your code so I can see what you tried.(I know this can be daunting- You will get participation/efforts points here regardless of the outcome) _Hint: There are examples online of 'functions' people have written to calculate mode. You can use these without editing the function_
+
+```{r warning=FALSE, error= FALSE}
+
+getmode <- function(x) {
+   uniqx <- unique(x)
+   uniqx[which.max(tabulate(match(x, uniqx)))]
+}
+
+getmode(x = TrophicStateExample$chl_a_ugL)
+getmode(x = TrophicStateExample$secchi_depth_m)
+
+```
+
+
+R sometimes needs a little help understanding timeseries data. Download the TimeseriesExample file from Canvas and save it in your working directory (make sure it saves as a .csv).Then run the code below line by line...
+
+```{r warning=FALSE, error= FALSE}
+
+data <- read_csv("TimeseriesExample.csv") #import example data
+
+str(data) #check structure of the data. You will see that R thinks your date column is a character (instead of a date). You will need to fix this before working with your data. 
+
+```
+
+A great tool for working the timeseries data in R is a package called _lubridate_. Run the example below of using lubridate to correct the problem identified with the str() command above. **(Don't forget to install the lubridate package if you haven't already done so)**
+
+```{r warning=FALSE, error= FALSE}
+
+library(lubridate)
+data$date<- mdy(data$date)
+
+str(data) # now rerun the str() command and see the difference. You should now see Date where chr was before. 
+
+```
+
+Packages, like lubridate, are really helpful when importing and manipulating data. For example, lubridate can use the date column to create a column with the year and month. These features of R work best when you write "strings". My preferred methodology (and the one we will be using in this class) is called * The Tidyverse *. Run the example code below and then look at how your dataframe has changed. 
+
+```{r warning=FALSE, error= FALSE}
+
+library(tidyverse)
+
+data<-data %>% 
+  mutate(month=month(date),
+         year= year(date))
+
+view(data)
+
+```
+
+The tidyverse is a powerful tool for analyzing data. We will continue to revisit it throughout the semester. 
+
