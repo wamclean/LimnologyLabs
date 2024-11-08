@@ -90,9 +90,9 @@ do_percent_prof <- ggplot() +
         shape = "")+
   scale_y_reverse(expand = c(0.015,0))+
   scale_color_manual(values = c("Group_1" = "blue3", "Group_3" = "green3"),
-                     labels = c("Group_1" = "Group 1", "Group_3" = "Group 3")) +
+                     labels = c("Group_1" = "Group 6", "Group_3" = "Group 3")) +
   scale_shape_manual(values = c("Group_1" = 16, "Group_3" = 17),
-                     labels = c("Group_1" = "Group 1", "Group_3" = "Group 3")) +
+                     labels = c("Group_1" = "Group 6", "Group_3" = "Group 3")) +
   theme(text = element_text(size = 10))
 
 do_mgL_prof <- ggplot() +  
@@ -104,9 +104,9 @@ do_mgL_prof <- ggplot() +
         shape = "")+
   scale_y_reverse(expand = c(0.015,0))+
   scale_color_manual(values = c("Group_1" = "blue3", "Group_3" = "green3"),
-                     labels = c("Group_1" = "Group 1", "Group_3" = "Group 3")) +
+                     labels = c("Group_1" = "Group 6", "Group_3" = "Group 3")) +
   scale_shape_manual(values = c("Group_1" = 16, "Group_3" = 17),
-                     labels = c("Group_1" = "Group 1", "Group_3" = "Group 3")) +
+                     labels = c("Group_1" = "Group 6", "Group_3" = "Group 3")) +
   scale_x_continuous(breaks = seq(floor(min(do_mgL$do_mgL)), ceiling(max(do_mgL$do_mgL)), by = 1.5)) + 
   theme(text = element_text(size = 10))
 
@@ -129,9 +129,9 @@ temp_prof <- ggplot(data = temp, mapping = aes(x=temp_c, y=z_m, color=group, sha
         title = "Horsetooth Reservoir Temperature Profile")+
   scale_y_reverse(expand = c(0.015,0))+
   scale_color_manual(values = c("Group_1" = "blue3", "Group_3" = "green3"),
-                     labels = c("Group_1" = "Group 1", "Group_3" = "Group 3")) +
+                     labels = c("Group_1" = "Group 6", "Group_3" = "Group 3")) +
   scale_shape_manual(values = c("Group_1" = 16, "Group_3" = 17),
-                     labels = c("Group_1" = "Group 1", "Group_3" = "Group 3")) +
+                     labels = c("Group_1" = "Group 6", "Group_3" = "Group 3")) +
   scale_x_continuous(breaks = seq(floor(min(temp$temp_c)), ceiling(max(temp$temp_c)), by = 1.5)) + 
   scale_x_continuous(breaks = seq(floor(min(temp$temp_c)), ceiling(max(temp$temp_c)), by = 1.0))+
   theme(text = element_text(size = 10)) 
@@ -154,9 +154,9 @@ pH_prof <- ggplot(pH,aes(x=ph,y=z_m, color=group, shape= group)) +
         title = "Horsetooth Reservoir pH Profile")+
   scale_y_reverse(expand = c(0.015,0))+
   scale_color_manual(values = c("Group_1" = "blue3", "Group_3" = "green3"),
-                     labels = c("Group_1" = "Group 1", "Group_3" = "Group 3")) +
+                     labels = c("Group_1" = "Group 6", "Group_3" = "Group 3")) +
   scale_shape_manual(values = c("Group_1" = 16, "Group_3" = 17),
-                     labels = c("Group_1" = "Group 1", "Group_3" = "Group 3"))+
+                     labels = c("Group_1" = "Group 6", "Group_3" = "Group 3"))+
   scale_x_continuous(breaks = seq(floor(min(pH$ph)), ceiling(max(pH$ph)), by = .1))+
   theme(text = element_text(size = 10)) 
 
@@ -252,7 +252,7 @@ Hypo <- GroupTotals %>%
 N_Comparison <- bind_rows(Epi, Hypo)
 
 #Boxplot to show distribution of data
-ggplot()+
+N_Box <- ggplot()+
   theme_bw()+
   geom_boxplot(data = N_Comparison, mapping = aes(x = SampleLocation, y = N, color = SampleLocation))+
   labs(x = "Sample Location",
@@ -261,6 +261,7 @@ ggplot()+
        title = "Distribution of All Nitrogen Measurements - Horsetooth Reservoir")+
   theme(legend.position = "none")
 
+N_Box
 ```
 
 ###### Figure 5: Boxplot showing the distribution of Nitrogen measurements in mg/L
@@ -276,7 +277,7 @@ N_Totals <- N_Comparison %>%
 
 print(N_Totals)
 
-ggplot()+
+N_Total_Plot <- ggplot()+
   theme_bw()+
   geom_col(data = N_Totals, mapping = aes(x = SampleLocation, y = totalN, fill = SampleLocation))+
   labs(x = "Sample Location",
@@ -284,6 +285,7 @@ ggplot()+
        fill = "",
        title = "Total Observed Nitrogen - Horsetooth Reservoir")
 
+N_Total_Plot
 
 ```
 
@@ -306,6 +308,7 @@ ChlA_Plot
 
 ChlA_Mean <- mean(ChlA$Chla_ugL)
 ChlA_Mean
+
 ```
 
 ###### Figure 7: Boxplot showing the distribution of Chlorophyll A as collected by the class
@@ -341,7 +344,10 @@ undiluted <- ggplot()+
        x = "",
        y = "DOC (mg/L)")
 
-grid.arrange(undiluted, diluted, ncol = 2, top = "Distribution of Dissolved Organic Carbon Measurements in Horsetooth Reservoir", bottom = "Sample Location")
+DOC_plot <- grid.arrange(undiluted, diluted, ncol = 2, top = "Distribution of Dissolved Organic Carbon Measurements in Horsetooth Reservoir", bottom = "Sample Location")
+
+DOC_plot
+
 ```
 
 ###### Figure 8: Boxplots showing the distribution of Dissolved Organic Carbon measurements in Horesetooth Reservoir. On the left are data from All samples, on the right are data from Diluted Samples. The Diluted Samples plot is omitting an Eplimnion outlier of 6.730 mg/L
@@ -372,7 +378,7 @@ SecchiMean <- Secchi %>%
   ungroup()
 
 
-ggplot()+
+Group_secchi_plot <- ggplot()+
   theme_bw()+
   geom_col(data = SecchiMean, mapping = aes(x = group_number, y = MeanDepth, fill = group_number))+
   scale_y_reverse(breaks = seq(floor(min(SecchiMean$MeanDepth)), ceiling(max(SecchiMean$MeanDepth)), by = .2)) + 
@@ -380,12 +386,15 @@ ggplot()+
        y = "Average Secchi Depth (m)",
        fill = "",
        title = "Average Secchi Depth in Horsetooth Reservoir by Group")
+
+Group_secchi_plot
+
 ```
 
 ###### Figure 9: Mean Secchi Depth by group, , observations from Group 10 have been omitted as their notation was deemed unreliable
 
 ```{r}
-ggplot()+
+indi_secchi_plot <- ggplot()+
   theme_bw()+
   geom_col(data = Secchi, mapping = aes(x = group_number, y = depth_m, fill = Sample_taker), position = "dodge")+
   scale_y_reverse()+
@@ -394,6 +403,7 @@ ggplot()+
        y = "Observed Secchi Depth (m)",
        fill = "",
        title = "Secchi Depth in Horsetooth Reservoir by Individual Observer")
+indi_secchi_plot
 
 ```
 
@@ -415,9 +425,9 @@ The temperature profiles show the division between the Epilimnion, Metalimnion, 
 
 Figure 3:
 
-This ph profile shows an interesting trend. Beginning with Group 1's data, we can see pH at the surface is between 7.3 and 7.4, and it gradually rises to \~7.55 at about 7.5m depth, before falling to \~7.3 just below 15m depth. Below 15m pH readings vary significantly at each measurement interval.
+This pH profile shows an interesting trend. Beginning with Group 6's data, we can see pH at the surface is between 7.3 and 7.4, and it gradually rises to \~7.55 at about 7.5m depth, before falling to \~7.3 just below 15m depth. Below 15m pH readings vary significantly at each measurement interval.
 
-Group 3's data shows more extreme variance in readings, we attribute this to movement of the boat altering measurement depths unpredictably and therefor altering the accuracy of readings. While the data from this group is less consistent, it loosely follows the same pattern as Group 1's data.
+Group 3's data shows more extreme variance in readings, we attribute this to movement of the boat altering measurement depths unpredictably and therefor altering the accuracy of readings. While the data from this group is less consistent, it loosely follows the same pattern as Group 6's data.
 
 Figure 4:
 
@@ -502,3 +512,19 @@ Can be any citation style as long as the style is consistent. Please only use pe
 #### Contribution Roles [1 point]:
 
 Using [this website](https://authorservices.wiley.com/author-resources/Journal-Authors/open-access/credit.html) as a guideline, please describe the contributions of each group member to the final product. Each group member should contribute an equal amount of time and effort. If during the report writing process this is not happening, please reach out to the instructor(s) with your concerns.
+
+```{r}
+indi_secchi_plot
+Group_secchi_plot
+DOC_plot
+ChlA_Plot
+temp_prof
+pH_prof
+
+N_Total_Plot
+N_Box
+TN
+
+
+```
+
