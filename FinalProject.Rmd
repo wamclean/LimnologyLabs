@@ -264,6 +264,10 @@ N_Box <- ggplot()+
 N_Box
 ```
 
+```{r}
+#ggsave(filename = "N_Dist.png", plot = N_Box, path = "/Users/wamclean/github/LimnologyLabs/images", width = 8, height = 6, dpi = 300)
+```
+
 ###### Figure 5: Boxplot showing the distribution of Nitrogen measurements in mg/L
 
 ```{r}
@@ -289,6 +293,10 @@ N_Total_Plot
 
 ```
 
+```{r}
+#ggsave(filename = "N_Totals.png", plot = N_Total_Plot, path = "/Users/wamclean/github/LimnologyLabs/images", width = 8, height = 6, dpi = 300)
+```
+
 ###### Figure 6: Comparison of total observed Nitrogen
 
 ##### A figure illustrating the distribution of epilimnion chlorophyll a values taken by everyone, and the mean value.
@@ -311,6 +319,10 @@ ChlA_Mean
 
 ```
 
+```{r}
+#ggsave(filename = "Chla_Plot.png", plot = ChlA_Plot, path = "/Users/wamclean/github/LimnologyLabs/images", width = 8, height = 6, dpi = 300)
+```
+
 ###### Figure 7: Boxplot showing the distribution of Chlorophyll A as collected by the class
 
 ##### A comparison of dissolved organic carbon values between the epilimnion and hypolimnion depths
@@ -325,7 +337,8 @@ DOC <- DOC %>%
 
 DOC <- DOC %>% 
   filter(str_detect(Sample_Number, "-")) %>% 
-  mutate(SampleLocation = if_else(str_detect(Sample_Number, "E-"), "Epi", "Hypo"))
+  mutate(SampleLocation = if_else(str_detect(Sample_Number, "E-"), "Epi", "Hypo")) %>% 
+  filter(Result_DissolvedOrganicCarbon >= 0)
 
 DOC_Dil <- DOC %>% 
   filter(str_detect(Sample_Number, "Dil"))
@@ -340,14 +353,28 @@ diluted <- ggplot()+
 undiluted <- ggplot()+
   theme_bw()+
   geom_boxplot(data = DOC, mapping = aes(x = SampleLocation, y = Result_DissolvedOrganicCarbon))+
-  labs(title = "All Samples",
-       x = "",
+  labs(title = "Distribution of Dissolved Organic Carbon Measurements in Horsetooth Reservoir",
+       x = "Sample Location",
        y = "DOC (mg/L)")
 
-DOC_plot <- grid.arrange(undiluted, diluted, ncol = 2, top = "Distribution of Dissolved Organic Carbon Measurements in Horsetooth Reservoir", bottom = "Sample Location")
+undiluted
 
-DOC_plot
+DOC_stats <- DOC %>% 
+  group_by(SampleLocation) %>% 
+  summarize(Max = max(Result_DissolvedOrganicCarbon),
+            Min = min(Result_DissolvedOrganicCarbon),
+            Mean = mean(Result_DissolvedOrganicCarbon),
+            Median = median(Result_DissolvedOrganicCarbon))
+print(DOC_stats)
 
+#DOC_plot <- grid.arrange(undiluted, diluted, ncol = 2, top = "Distribution of Dissolved Organic Carbon Measurements in Horsetooth Reservoir", bottom = "Sample Location")
+
+#DOC_plot
+
+```
+
+```{r}
+#ggsave(filename = "DOC.png", plot = undiluted, path = "/Users/wamclean/github/LimnologyLabs/images", width = 8, height = 6, dpi = 300)
 ```
 
 ###### Figure 8: Boxplots showing the distribution of Dissolved Organic Carbon measurements in Horesetooth Reservoir. On the left are data from All samples, on the right are data from Diluted Samples. The Diluted Samples plot is omitting an Eplimnion outlier of 6.730 mg/L
@@ -377,6 +404,7 @@ SecchiMean <- Secchi %>%
   summarize(MeanDepth = mean(depth_m)) %>% 
   ungroup()
 
+avg_depth <- mean(Secchi$depth_m)
 
 Group_secchi_plot <- ggplot()+
   theme_bw()+
@@ -388,7 +416,11 @@ Group_secchi_plot <- ggplot()+
        title = "Average Secchi Depth in Horsetooth Reservoir by Group")
 
 Group_secchi_plot
+print(avg_depth)
+```
 
+```{r}
+#ggsave(filename = "Group_secchi_plot.png", plot = Group_secchi_plot, path = "/Users/wamclean/github/LimnologyLabs/images", width = 8, height = 6, dpi = 300)
 ```
 
 ###### Figure 9: Mean Secchi Depth by group, , observations from Group 10 have been omitted as their notation was deemed unreliable
@@ -405,6 +437,10 @@ indi_secchi_plot <- ggplot()+
        title = "Secchi Depth in Horsetooth Reservoir by Individual Observer")
 indi_secchi_plot
 
+```
+
+```{r}
+#ggsave(filename = "indi_secchi_plot.png", plot = indi_secchi_plot, path = "/Users/wamclean/github/LimnologyLabs/images", width = 8, height = 6, dpi = 300)
 ```
 
 ###### Figure 10: Secchi Depth by observer, observations from Group 10 have been omitted as their notation was deemed unreliable
@@ -516,7 +552,7 @@ Using [this website](https://authorservices.wiley.com/author-resources/Journal-A
 ```{r}
 indi_secchi_plot
 Group_secchi_plot
-DOC_plot
+undiluted
 ChlA_Plot
 temp_prof
 pH_prof
@@ -527,4 +563,3 @@ TN
 
 
 ```
-
